@@ -11,17 +11,17 @@ defmodule CcLinkerFlags do
 end
 
 defimpl LinkerFlags, for: CcLinkerFlags do
-  def libs(cclinkerflags) do
+  def libs(cc_linker_flags) do
     Enum.flat_map(
-      cclinkerflags.link_libs,
+      cc_linker_flags.link_libs,
       fn x -> [CcLinkerFlags.lib_flag(), x] end
     )
   end
 
-  def output_name(cclinkerflags) do
-    case cclinkerflags.output do
+  def output_name(cc_linker_flags) do
+    case cc_linker_flags.output do
       "" -> []
-      _ -> [CcLinkerFlags.output_flag(), cclinkerflags.output]
+      _ -> [CcLinkerFlags.output_flag(), cc_linker_flags.output]
     end
   end
 end

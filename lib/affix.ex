@@ -1,7 +1,7 @@
 defmodule Affix do
   def build(files, include_dirs, output, libs) do
-    ccflags = %Ccflags{include_dirs: include_dirs, no_link?: true}
-    cc = %Cc{executable: "gcc", flags: ccflags}
+    cc_flags = %CcFlags{include_dirs: include_dirs, no_link?: true}
+    cc = %Cc{executable: "gcc", flags: cc_flags}
 
     unlinked_files = Enum.map(files, fn file -> compile_file(file, cc) end)
     
@@ -15,8 +15,8 @@ defmodule Affix do
   defp compile_file(file, cc) do
     output_name = file <> ".o"
     file_flags = %{cc.flags | output: output_name}
-    ccflags = CompilerFlags.output_name(file_flags) ++ CompilerFlags.no_link(file_flags) ++ CompilerFlags.include_dirs(file_flags)
-    Compiler.compile(cc, [file], ccflags)
+    cc_flags = CompilerFlags.output_name(file_flags) ++ CompilerFlags.no_link(file_flags) ++ CompilerFlags.include_dirs(file_flags)
+    Compiler.compile(cc, [file], cc_flags)
 
     output_name 
   end
