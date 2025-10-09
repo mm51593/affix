@@ -3,13 +3,13 @@ defmodule Cc do
 end
 
 defimpl Compiler, for: Cc do
-  def compile(compiler, files, flags) do
-    {_, exit_code} = Shell.exec(compiler.executable, files ++ flags)
+  def compile(compiler, src_files, flags) do
+    {_, exit_code} = Shell.exec(compiler.executable, src_files ++ flags)
     exit_code
   end
 
-  def preprocess(compiler, files, flags) do
-    {_, exit_code} = Shell.exec(compiler.executable, ["-E" | files ++ flags])
+  def preprocess(compiler, src_files, flags) do
+    {_, exit_code} = Shell.exec(compiler.executable, ["-E" | src_files ++ flags])
     exit_code
   end
 end

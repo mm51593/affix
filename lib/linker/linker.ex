@@ -1,3 +1,3 @@
 defprotocol Linker do
-  def link(linker, files, flags)
+  def link(linker, obj_files, flags)
 end
