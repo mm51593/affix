@@ -14,7 +14,7 @@ defmodule Ccflags do
   end
 end
 
-defimpl Flags, for: Ccflags do
+defimpl CompilerFlags, for: Ccflags do
   def include_dirs(ccflags) do
     Enum.flat_map(
       ccflags.include_dirs,
