@@ -31,7 +31,7 @@ defmodule Build do
 
   defp compile_file(src_file, cc) do
     output_name = src_file <> ".o"
-    cc_flags = Flags.render(%{cc.flags | flag_output: output_name})
+    cc_flags = CcFlags.render(%{cc.flags | flag_output: output_name})
 
     Compiler.compile(cc, [src_file], cc_flags)
 
@@ -47,7 +47,7 @@ defmodule Build do
 
     cc_linker = %CcLinker{executable: build.cc, flags: linker_flags}
 
-    linker_flags = Flags.render(linker_flags)
+    linker_flags = CcLinkerFlags.render(linker_flags)
 
     Linker.link(cc_linker, obj_files, linker_flags)
   end
