@@ -3,7 +3,7 @@ defmodule CcLinkerFlags do
 
   defstruct [
     :flag_output,
-    :flag_libs
+    flag_libs: []
   ]
 
   def get_switch(:flag_output), do: "-o"

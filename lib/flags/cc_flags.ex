@@ -4,7 +4,7 @@ defmodule CcFlags do
   defstruct [
     :flag_include,
     :flag_output,
-    :flag_no_link?
+    flag_no_link?: true
   ]
 
   def get_switch(:flag_include), do: "-I"

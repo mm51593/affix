@@ -19,8 +19,6 @@ defmodule Build do
   defp compile(build) do
     cc_flags = %CcFlags{
       flag_include: build.include,
-      flag_output: nil,
-      flag_no_link?: true
     }
 
     cc = %Cc{executable: build.cc, flags: cc_flags}
@@ -29,7 +27,7 @@ defmodule Build do
   end
 
   defp compile_file(src_file, cc) do
-    output_name = src_file <> ".o"
+    output_name = Path.rootname(src_file) <> ".o"
     cc_flags = CcFlags.render(%{cc.flags | flag_output: output_name})
 
     Compiler.compile(cc, [src_file], cc_flags)
