@@ -10,4 +10,38 @@ defmodule Build do
   def from_map(map) do
     struct(Build, Recipe.atomize_keys(map))
   end
+
+  def run_build(build) do
+    obj_files = compile(build)
+    link(build, obj_files)
+  end
+
+  def compile(build) do 
+    cc_flags = %CcFlags{include_dirs: build.include, no_link?: true}
+    cc = %Cc{executable: build.cc, flags: cc_flags}
+
+    Enum.map(build.src, &compile_file(&1, cc))
+  end
+
+  defp compile_file(src_file, cc) do
+    output_name = src_file <> ".o"
+    file_flags = %{cc.flags | output: output_name}
+
+    cc_flags =
+      CompilerFlags.output_name(file_flags) ++
+        CompilerFlags.no_link(file_flags) ++ CompilerFlags.include_dirs(file_flags)
+
+    Compiler.compile(cc, [src_file], cc_flags)
+
+    output_name
+  end
+
+  def link(build, obj_files) do
+    linker_flags = %CcLinkerFlags{output: build.target, link_libs: build.libs}
+    cc_linker = %CcLinker{executable: build.cc, flags: linker_flags}
+
+    linker_flags = LinkerFlags.libs(cc_linker.flags) ++ LinkerFlags.output_name(cc_linker.flags)
+
+    Linker.link(cc_linker, obj_files, linker_flags)
+  end
 end
