@@ -16,8 +16,14 @@ defmodule Build do
     link(build, obj_files)
   end
 
-  def compile(build) do 
-    cc_flags = %CcFlags{include_dirs: build.include, no_link?: true}
+  defp compile(build) do
+    cc_flags =
+      CcFlags.new(%{
+        flag_include: build.include,
+        flag_output: nil,
+        flag_no_link?: true
+      })
+
     cc = %Cc{executable: build.cc, flags: cc_flags}
 
     Enum.map(build.src, &compile_file(&1, cc))
@@ -25,22 +31,23 @@ defmodule Build do
 
   defp compile_file(src_file, cc) do
     output_name = src_file <> ".o"
-    file_flags = %{cc.flags | output: output_name}
-
-    cc_flags =
-      CompilerFlags.output_name(file_flags) ++
-        CompilerFlags.no_link(file_flags) ++ CompilerFlags.include_dirs(file_flags)
+    cc_flags = Flags.render(%{cc.flags | flag_output: output_name})
 
     Compiler.compile(cc, [src_file], cc_flags)
 
     output_name
   end
 
-  def link(build, obj_files) do
-    linker_flags = %CcLinkerFlags{output: build.target, link_libs: build.libs}
+  defp link(build, obj_files) do
+    linker_flags =
+      CcLinkerFlags.new(%{
+        flag_output: build.target,
+        flag_libs: build.libs
+      })
+
     cc_linker = %CcLinker{executable: build.cc, flags: linker_flags}
 
-    linker_flags = LinkerFlags.libs(cc_linker.flags) ++ LinkerFlags.output_name(cc_linker.flags)
+    linker_flags = Flags.render(linker_flags)
 
     Linker.link(cc_linker, obj_files, linker_flags)
   end

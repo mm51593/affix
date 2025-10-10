@@ -1,27 +1,38 @@
 defmodule CcLinkerFlags do
-  defstruct [:output, :link_libs]
+  defstruct [
+    :flag_output,
+    :flag_libs
+  ]
 
-  def output_flag do
-    "-o"
+  def get_switch(:flag_output), do: "-o"
+  def get_switch(:flag_libs), do: "-l"
+
+  def new(flags_map) do
+    flags_map
+    |> Map.new(fn {k, v} -> {k, %Flag{key: k, value: v}} end)
+    |> then(&struct(__MODULE__, &1))
   end
 
-  def lib_flag do
-    "-l"
+  def get_flags(cc_linker_flags) do
+    vals = cc_linker_flags |> Map.from_struct() |> Map.values()
+    Enum.filter(vals, &is_struct(&1, Flag))
   end
+
+  def render_flag(%{value: nil}), do: []
+  def render_flag(%{value: false}), do: []
+  def render_flag(%{value: ""}), do: []
+  def render_flag(%{value: true, key: key}), do: [__MODULE__.get_switch(key)]
+
+  def render_flag(%{value: value, key: key}) when is_list(value),
+    do: Enum.flat_map(value, fn x -> [__MODULE__.get_switch(key), x] end)
+
+  def render_flag(%{value: value, key: key}),
+    do: [__MODULE__.get_switch(key), value]
 end
 
-defimpl LinkerFlags, for: CcLinkerFlags do
-  def libs(cc_linker_flags) do
-    Enum.flat_map(
-      cc_linker_flags.link_libs,
-      fn x -> [CcLinkerFlags.lib_flag(), x] end
-    )
-  end
-
-  def output_name(cc_linker_flags) do
-    case cc_linker_flags.output do
-      "" -> []
-      _ -> [CcLinkerFlags.output_flag(), cc_linker_flags.output]
-    end
+defimpl Flags, for: CcLinkerFlags do
+  def render(cc_linker_flags) do
+    flags = CcLinkerFlags.get_flags(cc_linker_flags)
+    Enum.flat_map(flags, &CcLinkerFlags.render_flag(&1))
   end
 end
