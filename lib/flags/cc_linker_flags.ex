@@ -10,7 +10,6 @@ defmodule CcLinkerFlags do
   def get_switch(:flag_libs), do: "-l"
 
   def get_flags(cc_linker_flags) do
-    vals = cc_linker_flags |> Map.from_struct() |> Map.values()
-    Enum.filter(vals, &is_struct(&1, Flag))
+    Map.from_struct(cc_linker_flags)
   end
 end

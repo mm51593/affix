@@ -17,12 +17,11 @@ defmodule Build do
   end
 
   defp compile(build) do
-    cc_flags =
-      CcFlags.new(%{
-        flag_include: build.include,
-        flag_output: nil,
-        flag_no_link?: true
-      })
+    cc_flags = %CcFlags{
+      flag_include: build.include,
+      flag_output: nil,
+      flag_no_link?: true
+    }
 
     cc = %Cc{executable: build.cc, flags: cc_flags}
 
@@ -39,11 +38,10 @@ defmodule Build do
   end
 
   defp link(build, obj_files) do
-    linker_flags =
-      CcLinkerFlags.new(%{
-        flag_output: build.target,
-        flag_libs: build.libs
-      })
+    linker_flags = %CcLinkerFlags{
+      flag_output: build.target,
+      flag_libs: build.libs
+    }
 
     cc_linker = %CcLinker{executable: build.cc, flags: linker_flags}
 

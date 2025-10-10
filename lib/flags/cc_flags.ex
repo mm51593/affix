@@ -12,7 +12,6 @@ defmodule CcFlags do
   def get_switch(:flag_no_link?), do: "-c"
 
   def get_flags(cc_flags) do
-    vals = cc_flags |> Map.from_struct() |> Map.values()
-    Enum.filter(vals, &is_struct(&1, Flag))
+    Map.from_struct(cc_flags)
   end
 end
