@@ -21,16 +21,16 @@ defmodule Build do
       flag_include: build.include,
     }
 
-    cc = %Cc{executable: build.cc, flags: cc_flags}
+    cc = %Cc{executable: build.cc}
 
-    Enum.map(build.src, &compile_file(&1, cc))
+    Enum.map(build.src, &compile_file(&1, cc, cc_flags))
   end
 
-  defp compile_file(src_file, cc) do
+  defp compile_file(src_file, cc, cc_flags) do
     output_name = Path.rootname(src_file) <> ".o"
-    cc_flags = CcFlags.render(%{cc.flags | flag_output: output_name})
+    cc_flags = CcFlags.render(%{cc_flags | flag_output: output_name})
 
-    Compiler.compile(cc, [src_file], cc_flags)
+    Cc.compile(cc, [src_file], cc_flags)
 
     output_name
   end
@@ -41,10 +41,10 @@ defmodule Build do
       flag_libs: build.libs
     }
 
-    cc_linker = %CcLinker{executable: build.cc, flags: linker_flags}
+    cc_linker = %CcLinker{executable: build.cc}
 
     linker_flags = CcLinkerFlags.render(linker_flags)
 
-    Linker.link(cc_linker, obj_files, linker_flags)
+    CcLinker.link(cc_linker, obj_files, linker_flags)
   end
 end

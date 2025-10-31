@@ -1,4 +1,5 @@
-defprotocol Compiler do
-  def compile(compiler, src_files, flags)
-  def preprocess(compiler, src_files, flags)
+defmodule Compiler do
+  @callback compile(compiler :: Compiler, src_files :: List, flags :: List) :: Integer
+  @callback preprocess(compiler :: Compiler, src_files :: List, flags :: List) :: Integer
 end
+
