@@ -1,10 +1,19 @@
-defmodule ArgsBuilder do
+defmodule Args do
+  defstruct [
+    :exe,
+    :cmd,
+    :toggle,
+    :option,
+    :positional
+  ]
+
   def build_args(args_spec, props) do
     args_spec
     |> Enum.map(fn {key, spec} -> {spec, props[key]} end)
     |> Enum.map(&prop_to_arg(&1))
     |> Enum.reject(&is_nil(&1))
     |> Enum.reduce(%{}, fn {type, arg}, acc -> Map.update(acc, type, arg, &(&1 ++ arg)) end)
+    |> then(&struct(Args, &1))
   end
 
   defp prop_to_arg({_, nil}), do: nil
