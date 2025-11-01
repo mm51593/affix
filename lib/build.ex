@@ -7,44 +7,24 @@ defmodule Build do
     :libs
   ]
 
-  def from_map(map) do
-    struct(Build, Recipe.atomize_keys(map))
-  end
-
   def run_build(build) do
-    obj_files = compile(build)
-    link(build, obj_files)
+    build[:src]
+    |> Enum.map(fn file -> compile_file(file, build) end)
+    |> link(build)
   end
 
-  defp compile(build) do
-    cc_flags = %CcFlags{
-      flag_include: build.include,
-    }
-
-    cc = %Cc{executable: build.cc}
-
-    Enum.map(build.src, &compile_file(&1, cc, cc_flags))
-  end
-
-  defp compile_file(src_file, cc, cc_flags) do
+  defp compile_file(src_file, props) do
     output_name = Path.rootname(src_file) <> ".o"
-    cc_flags = CcFlags.render(%{cc_flags | flag_output: output_name})
+    props = %{props | src: src_file, target: output_name}
 
-    Cc.compile(cc, [src_file], cc_flags)
+    Cc.compile(props)
 
     output_name
   end
 
-  defp link(build, obj_files) do
-    linker_flags = %CcLinkerFlags{
-      flag_output: build.target,
-      flag_libs: build.libs
-    }
+  defp link(obj_files, props) do
+    props = %{props | src: obj_files}
 
-    cc_linker = %CcLinker{executable: build.cc}
-
-    linker_flags = CcLinkerFlags.render(linker_flags)
-
-    CcLinker.link(cc_linker, obj_files, linker_flags)
+    CcLinker.link(props)
   end
 end

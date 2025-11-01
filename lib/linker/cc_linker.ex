@@ -1,9 +1,16 @@
 defmodule CcLinker do
-  defstruct [:executable]
   @behaviour Linker
 
-  def link(linker, obj_files, flags) do
-    {_, exit_code} = Shell.exec(linker.executable, obj_files ++ flags)
+  @link_spec [
+    cc: {:exe},
+    src: {:positional},
+    libs: {:option, "-l"},
+    target: {:option, "-o"}
+  ]
+
+  def link(props) do
+    args = Args.build_args(@link_spec, props)
+    {_, exit_code} = Shell.exec(args.exe, args.option ++ args.positional)
     exit_code
   end
 end

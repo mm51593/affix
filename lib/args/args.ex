@@ -17,7 +17,7 @@ defmodule Args do
   end
 
   defp prop_to_arg({_, nil}), do: nil
-  defp prop_to_arg({{:exe}, v}), do: {:exe, List.flatten([v])}
+  defp prop_to_arg({{:exe}, v}), do: {:exe, v}
   defp prop_to_arg({{:positional}, v}), do: {:positional, List.flatten([v])}
   defp prop_to_arg({{:toggle, flag}, true}), do: {:toggle, [flag]}
 
