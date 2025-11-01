@@ -1,3 +1,3 @@
-defprotocol Linker do
-  def link(linker, obj_files, flags)
+defmodule Linker do
+  @callback link(linker :: Linker, obj_files :: List, flags :: List) :: Integer
 end

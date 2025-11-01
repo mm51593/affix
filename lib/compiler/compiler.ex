@@ -1,4 +1,5 @@
-defprotocol Compiler do
-  def compile(compiler, src_files, flags)
-  def preprocess(compiler, src_files, flags)
+defmodule Compiler do
+  @callback compile(props :: Map) :: Integer
+  @callback preprocess(props :: Map) :: Integer
 end
+
