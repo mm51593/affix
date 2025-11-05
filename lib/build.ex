@@ -17,7 +17,8 @@ defmodule Build do
     output_name = Path.rootname(src_file) <> ".o"
     props = %{props | src: src_file, target: output_name}
 
-    Cc.compile(props)
+    Cc.Compile.perform(props)
+    Cc.Compile.perform(props)
 
     output_name
   end
@@ -25,6 +26,6 @@ defmodule Build do
   defp link(obj_files, props) do
     props = %{props | src: obj_files}
 
-    CcLinker.link(props)
+    CcLinker.Link.perform(props)
   end
 end
